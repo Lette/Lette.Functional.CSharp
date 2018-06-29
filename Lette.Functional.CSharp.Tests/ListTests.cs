@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using FsCheck.Xunit;
-using Lette.Functional.CSharp.Railway;
 using Xunit;
 
 namespace Lette.Functional.CSharp.Tests

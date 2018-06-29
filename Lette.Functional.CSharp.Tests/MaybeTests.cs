@@ -1,7 +1,6 @@
 ﻿using System;
 using FsCheck;
 using FsCheck.Xunit;
-using Lette.Functional.CSharp.Railway;
 using Xunit;
 
 namespace Lette.Functional.CSharp.Tests

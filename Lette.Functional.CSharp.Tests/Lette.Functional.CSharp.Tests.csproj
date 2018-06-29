@@ -51,7 +51,7 @@
     </PackageReference>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Railway\Lette.Functional.CSharp.csproj">
+    <ProjectReference Include="..\Lette.Functional.CSharp\Lette.Functional.CSharp.csproj">
       <Project>{f4b42891-2c85-4335-8ac2-764ebe5011b7}</Project>
       <Name>Lette.Functional.CSharp</Name>
     </ProjectReference>
