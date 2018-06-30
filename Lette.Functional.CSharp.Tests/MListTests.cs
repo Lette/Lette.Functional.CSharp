@@ -1,4 +1,5 @@
 ﻿using System;
+using FsCheck;
 using FsCheck.Xunit;
 using Xunit;
 
@@ -125,7 +126,69 @@ namespace Lette.Functional.CSharp.Tests
 
         public class FunctorLaws
         {
-            // TODO
+            public class FirstLaw
+            {
+                // Assert that:
+                // fmap id = id
+
+                private readonly Func<MList<int>, MList<int>> _left = ((Func<int, int>)Functional.Id).FMMap();
+                private readonly Func<MList<int>, MList<int>> _right = Functional.Id;
+
+                [Fact]
+                public void Empty_list()
+                {
+                    Assert.Equal(_left(MList<int>.Empty), _right(MList<int>.Empty));
+                }
+
+                [Property]
+                public bool Non_empty_list(int i1, int i2)
+                {
+                    var input = MList<int>.List(i1, MList<int>.List(i2, MList<int>.Empty));
+
+                    return _left(input).Equals(_right(input));
+                }
+            }
+
+            public class SecondLaw
+            {
+                // Assert that:
+                // fmap (g . h) = (fmap g) . (fmap h)
+
+                public static readonly Func<string, int> Length = s => s.Length;
+                public static readonly Func<int, double> DivBy4 = i => i / 4.0;
+
+                public static readonly Func<MList<string>, MList<double>> ComposedThenElevated =
+                    Length.Compose(DivBy4).FMMap();
+
+                public static readonly Func<MList<string>, MList<double>> ElevatedThenComposed =
+                    Length.FMMap().Compose(DivBy4.FMMap());
+
+                [Fact]
+                public void Empty_list()
+                {
+                    var emptyList = MList<string>.Empty;
+
+                    Assert.Equal(MList<double>.Empty, ComposedThenElevated(emptyList));
+                    Assert.Equal(MList<double>.Empty, ElevatedThenComposed(emptyList));
+                }
+
+                [Property]
+                public bool Non_empty_list(NonNull<string> s1, NonNull<string> s2)
+                {
+                    var list = MList<string>.List(
+                        s1.Item, MList<string>.List(
+                            s2.Item, MList<string>.Empty));
+
+                    var expected = MList<double>.List(
+                        Length.Compose(DivBy4)(s1.Item), MList<double>.List(
+                            Length.Compose(DivBy4)(s2.Item), MList<double>.Empty));
+
+                    return
+                        expected.Equals(ComposedThenElevated(list))
+                        &&
+                        expected.Equals(ElevatedThenComposed(list));
+                }
+            }
         }
 
         public class ApplicativeTests
