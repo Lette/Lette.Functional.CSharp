@@ -2,6 +2,7 @@
 using FsCheck;
 using FsCheck.Xunit;
 using Xunit;
+using static Lette.Functional.CSharp.Functional;
 
 namespace Lette.Functional.CSharp.Tests
 {
@@ -131,8 +132,8 @@ namespace Lette.Functional.CSharp.Tests
                 // Assert that:
                 // fmap id = id
 
-                private readonly Func<MList<int>, MList<int>> _left = ((Func<int, int>)Functional.Id).FMMap();
-                private readonly Func<MList<int>, MList<int>> _right = Functional.Id;
+                private readonly Func<MList<int>, MList<int>> _left = ((Func<int, int>)Id).FMMap();
+                private readonly Func<MList<int>, MList<int>> _right = Id;
 
                 [Fact]
                 public void Empty_list()
@@ -278,7 +279,7 @@ namespace Lette.Functional.CSharp.Tests
                 public void Empty_list()
                 {
                     var v = MList<int>.Empty;
-                    var pureId = ((Func<int, int>)Functional.Id).MPure();
+                    var pureId = ((Func<int, int>)Id).MPure();
 
                     var left = pureId.MApply(v);
                     var right = v;
@@ -290,7 +291,7 @@ namespace Lette.Functional.CSharp.Tests
                 public bool Non_empty_list(byte b1, byte b2)
                 {
                     var v = MList<byte>.List(b1, MList<byte>.List(b2, MList<byte>.Empty));
-                    var pureId = ((Func<byte, byte>)Functional.Id).MPure();
+                    var pureId = ((Func<byte, byte>)Id).MPure();
 
                     var left = pureId.MApply(v);
                     var right = v;
@@ -369,7 +370,7 @@ namespace Lette.Functional.CSharp.Tests
                     // \g h x -> (g . h) x
                     //            g(  h( x ))
 
-                    var pureComposeRight = Functional.ComposeRight<int, int, int>().MPure();
+                    var pureComposeRight = ComposeRight<int, int, int>().MPure();
                     var right = pureComposeRight.MApply(u).MApply(v).MApply(w);
 
                     return left.Equals(right);
