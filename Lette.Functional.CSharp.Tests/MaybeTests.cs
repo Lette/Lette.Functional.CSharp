@@ -231,7 +231,6 @@ namespace Lette.Functional.CSharp.Tests
                 // apply u (pure y) = apply (pure (\x -> x y)) u
 
                 Maybe<Func<int, int>> u = Maybe<Func<int, int>>.Just(i => i + 1);
-                //int y = 1;
 
                 var left = u.Apply()(MaybeExtensions.Pure(y));
 
