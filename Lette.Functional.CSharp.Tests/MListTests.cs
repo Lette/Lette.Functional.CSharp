@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using FsCheck;
 using FsCheck.Xunit;
 using Xunit;
@@ -76,17 +77,8 @@ namespace Lette.Functional.CSharp.Tests
             [Fact]
             public void Reverse_of_list_is_list_with_elements_in_reverse_order()
             {
-                var list = MList<string>.List(
-                    "w", MList<string>.List(
-                        "x", MList<string>.List(
-                            "y", MList<string>.List(
-                                "z", MList<string>.Empty))));
-
-                var reversedList = MList<string>.List(
-                    "z", MList<string>.List(
-                        "y", MList<string>.List(
-                            "x", MList<string>.List(
-                                "w", MList<string>.Empty))));
+                var list = CreateList("w", "x", "y", "z");
+                var reversedList = CreateList("z", "y", "x", "w");
 
                 Assert.Equal(reversedList, list.Reverse());
             }
@@ -109,15 +101,9 @@ namespace Lette.Functional.CSharp.Tests
             {
                 Func<string, int> f = s => s.Length;
 
-                var list = MList<string>.List(
-                    "a", MList<string>.List(
-                        "aa", MList<string>.List(
-                            "aaa", MList<string>.Empty)));
+                var list = CreateList("a", "aa", "aaa");
 
-                var expected = MList<int>.List(
-                    f("a"), MList<int>.List(
-                        f("aa"), MList<int>.List(
-                            f("aaa"), MList<int>.Empty)));
+                var expected = CreateList(f("a"), f("aa"), f("aaa"));
 
                 var mappedF = MList.FMap(f);
 
@@ -132,7 +118,7 @@ namespace Lette.Functional.CSharp.Tests
                 // Assert that:
                 // fmap id = id
 
-                private readonly Func<MList<int>, MList<int>> _left = MList.FMap(((Func<int, int>)Id));
+                private readonly Func<MList<int>, MList<int>> _left = MList.FMap((Func<int, int>)Id);
                 private readonly Func<MList<int>, MList<int>> _right = Id;
 
                 [Fact]
@@ -144,7 +130,7 @@ namespace Lette.Functional.CSharp.Tests
                 [Property]
                 public bool Non_empty_list(int i1, int i2)
                 {
-                    var input = MList<int>.List(i1, MList<int>.List(i2, MList<int>.Empty));
+                    var input = CreateList(i1, i2);
 
                     return _left(input).Equals(_right(input));
                 }
@@ -176,13 +162,11 @@ namespace Lette.Functional.CSharp.Tests
                 [Property]
                 public bool Non_empty_list(NonNull<string> s1, NonNull<string> s2)
                 {
-                    var list = MList<string>.List(
-                        s1.Item, MList<string>.List(
-                            s2.Item, MList<string>.Empty));
+                    var list = CreateList(s1.Item, s2.Item);
 
-                    var expected = MList<double>.List(
-                        Length.Compose(DivBy4)(s1.Item), MList<double>.List(
-                            Length.Compose(DivBy4)(s2.Item), MList<double>.Empty));
+                    var expected = CreateList(
+                        Length.Compose(DivBy4)(s1.Item),
+                        Length.Compose(DivBy4)(s2.Item));
 
                     return
                         expected.Equals(ComposedThenElevated(list))
@@ -221,7 +205,7 @@ namespace Lette.Functional.CSharp.Tests
             [Fact]
             public void Apply_with_empty_list_of_values_returns_empty_list()
             {
-                var fs = MList<Func<int, long>>.List(i => (long)i, MList<Func<int, long>>.Empty);
+                var fs = MList<Func<int, long>>.List(i => i, MList<Func<int, long>>.Empty);
                 var xs = MList<int>.Empty;
 
                 Assert.Equal(fs.Apply(xs), MList<long>.Empty);
@@ -243,22 +227,12 @@ namespace Lette.Functional.CSharp.Tests
                 Func<int, int> f = i => i + 3;
                 Func<int, int> g = i => i * 5;
 
-                var fs = MList<Func<int, int>>.List(
-                    f, MList<Func<int, int>>.List(
-                        g, MList<Func<int, int>>.Empty));
+                var fs = CreateList(f, g);
+                var xs = CreateList(2, 3, 4);
 
-                var xs = MList<int>.List(
-                    2, MList<int>.List(
-                        3, MList<int>.List(
-                            4, MList<int>.Empty)));
-
-                var expected = MList<int>.List(
-                    f(2), MList<int>.List(
-                        f(3), MList<int>.List(
-                            f(4), MList<int>.List(
-                                g(2), MList<int>.List(
-                                    g(3), MList<int>.List(
-                                        g(4), MList<int>.Empty))))));
+                var expected = CreateList(
+                    f(2), f(3), f(4),
+                    g(2), g(3), g(4));
 
                 var actual = fs.Apply(xs);
 
@@ -279,7 +253,7 @@ namespace Lette.Functional.CSharp.Tests
                 public void Empty_list()
                 {
                     var v = MList<int>.Empty;
-                    var pureId = MList.Pure(((Func<int, int>)Id));
+                    var pureId = MList.Pure((Func<int, int>)Id);
 
                     var left = pureId.Apply(v);
                     var right = v;
@@ -291,7 +265,7 @@ namespace Lette.Functional.CSharp.Tests
                 public bool Non_empty_list(byte b1, byte b2)
                 {
                     var v = MList<byte>.List(b1, MList<byte>.List(b2, MList<byte>.Empty));
-                    var pureId = MList.Pure(((Func<byte, byte>)Id));
+                    var pureId = MList.Pure((Func<byte, byte>)Id);
 
                     var left = pureId.Apply(v);
                     var right = v;
@@ -335,9 +309,9 @@ namespace Lette.Functional.CSharp.Tests
                 [Property]
                 public bool Third_law(int y)
                 {
-                    MList<Func<int, int>> u = MList<Func<int, int>>.List(
-                        i => i + 1, MList<Func<int, int>>.List(
-                            i => i * 2, MList<Func<int, int>>.Empty));
+                    var u = CreateList<Func<int, int>>(
+                        i => i + 1,
+                        i => i * 2);
 
                     var left = u.Apply(MList.Pure(y));
 
@@ -360,17 +334,13 @@ namespace Lette.Functional.CSharp.Tests
                     // u <*> (v <*> w) = pure (.) <*> u <*> v <*> w
                     // apply u (apply v w) = apply (apply (apply (pure (.)) u)) v) w
 
-                    var u = MList<Func<int, int>>.List(x => x * 2, MList<Func<int, int>>.List(x => x * 3, MList<Func<int, int>>.Empty));
-                    var v = MList<Func<int, int>>.List(x => x + 3, MList<Func<int, int>>.List(x => x + 4, MList<Func<int, int>>.Empty));
-                    var w = MList<int>.List(i1, MList<int>.List(i2, MList<int>.List(i3, MList<int>.Empty)));
-
-                    var left = u.Apply(v.Apply(w));
-
-                    // (.)
-                    // \g h x -> (g . h) x
-                    //            g(  h( x ))
+                    var u = CreateList<Func<int, int>>(x => x * 2, x => x * 3);
+                    var v = CreateList<Func<int, int>>(x => x + 3, x => x + 4);
+                    var w = CreateList(i1, i2, i3);
 
                     var pureComposeRight = MList.Pure(ComposeRight<int, int, int>());
+
+                    var left = u.Apply(v.Apply(w));
                     var right = pureComposeRight.Apply(u).Apply(v).Apply(w);
 
                     return left.Equals(right);
@@ -391,6 +361,18 @@ namespace Lette.Functional.CSharp.Tests
         public class KleisliTests
         {
             // TODO
+        }
+
+        public static MList<T> CreateList<T>(params T[] items)
+        {
+            var acc = MList<T>.Empty;
+
+            foreach (var value in items.Reverse())
+            {
+                acc = MList<T>.List(value, acc);
+            }
+
+            return acc;
         }
     }
 }
