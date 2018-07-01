@@ -72,7 +72,7 @@ namespace Lette.Functional.CSharp
         {
             return input.Match(
                 empty: ()      => MList<TOut>.Empty,
-                list:  (x, xs) => MList<TOut>.List(f(x), f.FMMap()(xs)));
+                list:  (x, xs) => MList<TOut>.List(f(x), f.FMMap(xs)));
         }
 
         // APPLICATIVE

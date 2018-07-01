@@ -99,7 +99,7 @@ namespace Lette.Functional.CSharp.Tests
             {
                 Func<int, string> f = null;
 
-                var result = f.FMMap()(MList<int>.Empty);
+                var result = f.FMMap(MList<int>.Empty);
 
                 Assert.Equal(MList<string>.Empty, result);
             }
