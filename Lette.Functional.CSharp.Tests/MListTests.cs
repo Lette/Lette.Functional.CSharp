@@ -267,7 +267,114 @@ namespace Lette.Functional.CSharp.Tests
 
         public class ApplicativeLaws
         {
-            // TODO
+            public class FirstLaw
+            {
+                // Assert that:
+                // pure id <*> v = v
+                //   <=>
+                // apply (pure id) v = v
+
+                [Fact]
+                public void Empty_list()
+                {
+                    var v = MList<int>.Empty;
+                    var pureId = ((Func<int, int>)Functional.Id).MPure();
+
+                    var left = pureId.MApply(v);
+                    var right = v;
+
+                    Assert.Equal(left, right);
+                }
+
+                [Property]
+                public bool Non_empty_list(byte b1, byte b2)
+                {
+                    var v = MList<byte>.List(b1, MList<byte>.List(b2, MList<byte>.Empty));
+                    var pureId = ((Func<byte, byte>)Functional.Id).MPure();
+
+                    var left = pureId.MApply(v);
+                    var right = v;
+
+                    return left.Equals(right);
+                }
+            }
+
+            public class SecondLaw
+            {
+                // pure f <*> pure x = pure (f x)
+                //   <=>
+                // apply (pure f) (pure x) = pure (f x)
+
+                [Fact]
+                public void Second_law()
+                {
+                    // pure f <*> pure x = pure (f x)
+                    //   <=>
+                    // apply (pure f) (pure x) = pure (f x)
+
+                    Func<string, int> f = s => s.Length;
+                    var x = "some string";
+
+                    var left = f.MPure().MApply(x.MPure());
+                    var right = f(x).MPure();
+
+                    Assert.Equal(left, right);
+                }
+            }
+
+            public class ThirdLaw
+            {
+                // u <*> pure y = pure ($ y) <*> u
+                // u <*> (pure y) = (pure ($ y)) <*> u
+                // apply u (pure y) = apply (pure ($ y)) u
+                // apply u (pure y) = apply (pure (\x -> x $ y)) u
+                // apply u (pure y) = apply (pure (\x -> ($) x y)) u
+                // apply u (pure y) = apply (pure (\x -> x y)) u
+
+                [Property]
+                public bool Third_law(int y)
+                {
+                    MList<Func<int, int>> u = MList<Func<int, int>>.List(
+                        i => i + 1, MList<Func<int, int>>.List(
+                            i => i * 2, MList<Func<int, int>>.Empty));
+
+                    var left = u.MApply(y.MPure());
+
+                    //                           \x -> x y
+                    Func<Func<int, int>, int> f = h => h(y);
+                    var right = f.MPure().MApply(u);
+
+                    return left.Equals(right);
+                }
+            }
+
+            public class FourthLaw
+            {
+                // u <*> (v <*> w) = pure (.) <*> u <*> v <*> w
+                // apply u (apply v w) = apply (apply (apply (pure (.)) u)) v) w
+
+                [Property]
+                public bool Fourth_law(int i1, int i2, int i3)
+                {
+                    // u <*> (v <*> w) = pure (.) <*> u <*> v <*> w
+                    // apply u (apply v w) = apply (apply (apply (pure (.)) u)) v) w
+
+                    var u = MList<Func<int, int>>.List(x => x * 2, MList<Func<int, int>>.List(x => x * 3, MList<Func<int, int>>.Empty));
+                    var v = MList<Func<int, int>>.List(x => x + 3, MList<Func<int, int>>.List(x => x + 4, MList<Func<int, int>>.Empty));
+                    var w = MList<int>.List(i1, MList<int>.List(i2, MList<int>.List(i3, MList<int>.Empty)));
+
+                    var left = u.MApply(v.MApply(w));
+
+                    // (.)
+                    // \g h x -> (g . h) x
+                    //            g(  h( x ))
+
+                    var pureComposeRight = Functional.ComposeRight<int, int, int>().MPure();
+                    var right = pureComposeRight.MApply(u).MApply(v).MApply(w);
+
+                    return left.Equals(right);
+                }
+            }
         }
 
         public class MonadTests
