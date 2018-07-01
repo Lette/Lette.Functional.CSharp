@@ -187,7 +187,7 @@ namespace Lette.Functional.CSharp.Tests
 
                 var v = Maybe<int>.Nothing;
 
-                var left = MaybeExtensions.Pure(((Func<int, int>)Functional.Id)).Apply()(v);
+                var left = MaybeExtensions.Pure(((Func<int, int>)Functional.Id)).Apply(v);
                 var right = v;
 
                 Assert.Equal(left, right);
@@ -198,7 +198,7 @@ namespace Lette.Functional.CSharp.Tests
             {
                 var v = Maybe<byte>.Just(b);
 
-                var left = MaybeExtensions.Pure(((Func<byte, byte>)Functional.Id)).Apply()(v);
+                var left = MaybeExtensions.Pure(((Func<byte, byte>)Functional.Id)).Apply(v);
                 var right = v;
 
                 return left.Equals(right);
@@ -214,7 +214,7 @@ namespace Lette.Functional.CSharp.Tests
                 Func<string, int> f = s => s.Length;
                 var x = "some string";
 
-                var left = MaybeExtensions.Pure(f).Apply()(MaybeExtensions.Pure(x));
+                var left = MaybeExtensions.Pure(f).Apply(MaybeExtensions.Pure(x));
                 var right = MaybeExtensions.Pure(f(x));
 
                 Assert.Equal(left, right);
@@ -232,11 +232,11 @@ namespace Lette.Functional.CSharp.Tests
 
                 Maybe<Func<int, int>> u = Maybe<Func<int, int>>.Just(i => i + 1);
 
-                var left = u.Apply()(MaybeExtensions.Pure(y));
+                var left = u.Apply(MaybeExtensions.Pure(y));
 
                 //                           \x -> x y
                 Func<Func<int, int>, int> f = h => h(y);
-                var right = MaybeExtensions.Pure(f).Apply()(u);
+                var right = MaybeExtensions.Pure(f).Apply(u);
 
                 return left.Equals(right);
             }
@@ -251,13 +251,13 @@ namespace Lette.Functional.CSharp.Tests
                 var v = Maybe<Func<int, int>>.Just(x => x + 3);
                 var w = Maybe<int>.Just(i);
 
-                var left = u.Apply()(v.Apply()(w));
+                var left = u.Apply(v.Apply(w));
 
                 // (.)
                 // \g h x -> (g . h) x
                 //            g(  h( x ))
 
-                var right = MaybeExtensions.Pure(Functional.ComposeRight<int, int, int>()).Apply()(u).Apply()(v).Apply()(w);
+                var right = MaybeExtensions.Pure(Functional.ComposeRight<int, int, int>()).Apply(u).Apply(v).Apply(w);
 
                 return left.Equals(right);
             }
