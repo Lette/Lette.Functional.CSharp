@@ -56,13 +56,13 @@ namespace Lette.Functional.CSharp.Tests
             [Fact]
             public void Length_of_empty_list_is_zero()
             {
-                Assert.Equal(0, MList<int>.Empty.MLength());
+                Assert.Equal(0, MList<int>.Empty.Length());
             }
 
             [Fact]
             public void Length_of_three_element_list_is_three()
             {
-                Assert.Equal(3, MList<int>.List(2, MList<int>.List(2, MList<int>.List(2, MList<int>.Empty))).MLength());
+                Assert.Equal(3, MList<int>.List(2, MList<int>.List(2, MList<int>.List(2, MList<int>.Empty))).Length());
             }
 
             [Fact]
@@ -99,7 +99,7 @@ namespace Lette.Functional.CSharp.Tests
             {
                 Func<int, string> f = null;
 
-                var result = f.FMMap(MList<int>.Empty);
+                var result = f.FMap(MList<int>.Empty);
 
                 Assert.Equal(MList<string>.Empty, result);
             }
@@ -119,7 +119,7 @@ namespace Lette.Functional.CSharp.Tests
                         f("aa"), MList<int>.List(
                             f("aaa"), MList<int>.Empty)));
 
-                var mappedF = f.FMMap();
+                var mappedF = MList.FMap(f);
 
                 Assert.Equal(expected, mappedF(list));
             }
@@ -132,7 +132,7 @@ namespace Lette.Functional.CSharp.Tests
                 // Assert that:
                 // fmap id = id
 
-                private readonly Func<MList<int>, MList<int>> _left = ((Func<int, int>)Id).FMMap();
+                private readonly Func<MList<int>, MList<int>> _left = MList.FMap(((Func<int, int>)Id));
                 private readonly Func<MList<int>, MList<int>> _right = Id;
 
                 [Fact]
@@ -159,10 +159,10 @@ namespace Lette.Functional.CSharp.Tests
                 public static readonly Func<int, double> DivBy4 = i => i / 4.0;
 
                 public static readonly Func<MList<string>, MList<double>> ComposedThenElevated =
-                    Length.Compose(DivBy4).FMMap();
+                    MList.FMap(Length.Compose(DivBy4));
 
                 public static readonly Func<MList<string>, MList<double>> ElevatedThenComposed =
-                    Length.FMMap().Compose(DivBy4.FMMap());
+                    MList.FMap(Length).Compose(MList.FMap(DivBy4));
 
                 [Fact]
                 public void Empty_list()
@@ -197,7 +197,7 @@ namespace Lette.Functional.CSharp.Tests
             [Property]
             public void Pure_returns_a_single_element_list(byte b)
             {
-                Assert.Equal(b.MPure(), MList<byte>.List(b, MList<byte>.Empty));
+                Assert.Equal(MList.Pure(b), MList<byte>.List(b, MList<byte>.Empty));
             }
 
             [Fact]
@@ -206,7 +206,7 @@ namespace Lette.Functional.CSharp.Tests
                 var fs = MList<Func<int, long>>.Empty;
                 var xs = MList<int>.Empty;
 
-                Assert.Equal(fs.MApply(xs), MList<long>.Empty);
+                Assert.Equal(fs.Apply(xs), MList<long>.Empty);
             }
 
             [Fact]
@@ -215,7 +215,7 @@ namespace Lette.Functional.CSharp.Tests
                 var fs = MList<Func<int, long>>.Empty;
                 var xs = MList<int>.List(1, MList<int>.Empty);
 
-                Assert.Equal(fs.MApply(xs), MList<long>.Empty);
+                Assert.Equal(fs.Apply(xs), MList<long>.Empty);
             }
 
             [Fact]
@@ -224,7 +224,7 @@ namespace Lette.Functional.CSharp.Tests
                 var fs = MList<Func<int, long>>.List(i => (long)i, MList<Func<int, long>>.Empty);
                 var xs = MList<int>.Empty;
 
-                Assert.Equal(fs.MApply(xs), MList<long>.Empty);
+                Assert.Equal(fs.Apply(xs), MList<long>.Empty);
             }
 
             [Property]
@@ -234,7 +234,7 @@ namespace Lette.Functional.CSharp.Tests
                 var fs = MList<Func<int, string>>.List(f, MList<Func<int, string>>.Empty);
                 var xs = MList<int>.List(a, MList<int>.Empty);
 
-                return fs.MApply(xs).Equals(MList<string>.List(f(a), MList<string>.Empty));
+                return fs.Apply(xs).Equals(MList<string>.List(f(a), MList<string>.Empty));
             }
 
             [Fact]
@@ -260,7 +260,7 @@ namespace Lette.Functional.CSharp.Tests
                                     g(3), MList<int>.List(
                                         g(4), MList<int>.Empty))))));
 
-                var actual = fs.MApply(xs);
+                var actual = fs.Apply(xs);
 
                 Assert.Equal(expected, actual);
             }
@@ -279,9 +279,9 @@ namespace Lette.Functional.CSharp.Tests
                 public void Empty_list()
                 {
                     var v = MList<int>.Empty;
-                    var pureId = ((Func<int, int>)Id).MPure();
+                    var pureId = MList.Pure(((Func<int, int>)Id));
 
-                    var left = pureId.MApply(v);
+                    var left = pureId.Apply(v);
                     var right = v;
 
                     Assert.Equal(left, right);
@@ -291,9 +291,9 @@ namespace Lette.Functional.CSharp.Tests
                 public bool Non_empty_list(byte b1, byte b2)
                 {
                     var v = MList<byte>.List(b1, MList<byte>.List(b2, MList<byte>.Empty));
-                    var pureId = ((Func<byte, byte>)Id).MPure();
+                    var pureId = MList.Pure(((Func<byte, byte>)Id));
 
-                    var left = pureId.MApply(v);
+                    var left = pureId.Apply(v);
                     var right = v;
 
                     return left.Equals(right);
@@ -316,8 +316,8 @@ namespace Lette.Functional.CSharp.Tests
                     Func<string, int> f = s => s.Length;
                     var x = "some string";
 
-                    var left = f.MPure().MApply(x.MPure());
-                    var right = f(x).MPure();
+                    var left = MList.Pure(f).Apply(MList.Pure(x));
+                    var right = MList.Pure(f(x));
 
                     Assert.Equal(left, right);
                 }
@@ -339,11 +339,11 @@ namespace Lette.Functional.CSharp.Tests
                         i => i + 1, MList<Func<int, int>>.List(
                             i => i * 2, MList<Func<int, int>>.Empty));
 
-                    var left = u.MApply(y.MPure());
+                    var left = u.Apply(MList.Pure(y));
 
                     //                           \x -> x y
                     Func<Func<int, int>, int> f = h => h(y);
-                    var right = f.MPure().MApply(u);
+                    var right = MList.Pure(f).Apply(u);
 
                     return left.Equals(right);
                 }
@@ -364,14 +364,14 @@ namespace Lette.Functional.CSharp.Tests
                     var v = MList<Func<int, int>>.List(x => x + 3, MList<Func<int, int>>.List(x => x + 4, MList<Func<int, int>>.Empty));
                     var w = MList<int>.List(i1, MList<int>.List(i2, MList<int>.List(i3, MList<int>.Empty)));
 
-                    var left = u.MApply(v.MApply(w));
+                    var left = u.Apply(v.Apply(w));
 
                     // (.)
                     // \g h x -> (g . h) x
                     //            g(  h( x ))
 
-                    var pureComposeRight = ComposeRight<int, int, int>().MPure();
-                    var right = pureComposeRight.MApply(u).MApply(v).MApply(w);
+                    var pureComposeRight = MList.Pure(ComposeRight<int, int, int>());
+                    var right = pureComposeRight.Apply(u).Apply(v).Apply(w);
 
                     return left.Equals(right);
                 }

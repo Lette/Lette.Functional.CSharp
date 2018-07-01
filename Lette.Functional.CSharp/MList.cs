@@ -63,33 +63,33 @@ namespace Lette.Functional.CSharp
         // FUNCTOR
 
         // fmap :: (a -> b) -> f a -> f b
-        public static Func<MList<TIn>, MList<TOut>> FMMap<TIn, TOut>(this Func<TIn, TOut> f)
+        public static Func<MList<TIn>, MList<TOut>> FMap<TIn, TOut>(this Func<TIn, TOut> f)
         {
-            return input => f.FMMap(input);
+            return input => f.FMap(input);
         }
 
-        public static MList<TOut> FMMap<TIn, TOut>(this Func<TIn, TOut> f, MList<TIn> input)
+        public static MList<TOut> FMap<TIn, TOut>(this Func<TIn, TOut> f, MList<TIn> input)
         {
             return input.Match(
                 empty: ()      => MList<TOut>.Empty,
-                list:  (x, xs) => MList<TOut>.List(f(x), f.FMMap(xs)));
+                list:  (x, xs) => MList<TOut>.List(f(x), f.FMap(xs)));
         }
 
         // APPLICATIVE
 
         // pure :: a -> f a
-        public static MList<T> MPure<T>(this T t) => MList<T>.List(t, MList<T>.Empty);
+        public static MList<T> Pure<T>(this T t) => MList<T>.List(t, MList<T>.Empty);
 
         // apply :: f(a -> b) -> (f a -> f b)
-        public static Func<MList<TIn>, MList<TOut>> MApply<TIn, TOut>(this MList<Func<TIn, TOut>> mf)
+        public static Func<MList<TIn>, MList<TOut>> Apply<TIn, TOut>(this MList<Func<TIn, TOut>> mf)
         {
             // fs <*> xs = [f x | f <- fs, x <- xs]
 
-            return input => mf.MApply(input);
+            return input => mf.Apply(input);
         }
 
         // apply :: f(a -> b) -> f a -> f b
-        public static MList<TOut> MApply<TIn, TOut>(this MList<Func<TIn, TOut>> mf, MList<TIn> input)
+        public static MList<TOut> Apply<TIn, TOut>(this MList<Func<TIn, TOut>> mf, MList<TIn> input)
         {
             // fs <*> xs = [f x | f <- fs, x <- xs]
 
@@ -108,11 +108,11 @@ namespace Lette.Functional.CSharp
 
         // UTILITY
 
-        public static int MLength<T>(this MList<T> list)
+        public static int Length<T>(this MList<T> list)
         {
             return list.Match(
                 empty: ()      => 0,
-                list:  (x, xs) => 1 + xs.MLength());
+                list:  (x, xs) => 1 + xs.Length());
         }
 
         public static MList<T> Reverse<T>(this MList<T> list)
