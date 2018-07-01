@@ -58,7 +58,7 @@ namespace Lette.Functional.CSharp
         }
     }
 
-    public static class MListExtensions
+    public static class MList
     {
         // FUNCTOR
 
