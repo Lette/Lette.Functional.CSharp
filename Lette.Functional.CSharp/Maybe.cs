@@ -77,7 +77,7 @@ namespace Lette.Functional.CSharp
         }
     }
 
-    public static class MaybeExtensions
+    public static class Maybe
     {
         // FUNCTOR
 

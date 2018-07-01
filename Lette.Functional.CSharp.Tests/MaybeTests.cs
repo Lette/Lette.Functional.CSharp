@@ -6,7 +6,7 @@ using static Lette.Functional.CSharp.Functional;
 
 namespace Lette.Functional.CSharp.Tests
 {
-    public class Maybe
+    public class MaybeTests
     {
         public class EqualityTests
         {
@@ -38,8 +38,8 @@ namespace Lette.Functional.CSharp.Tests
         public class FunctorTests
         {
             public static readonly Func<int, int> AddOne = x => x + 1;
-            public static readonly Func<Maybe<int>, Maybe<int>> ElevatedAddOne = MaybeExtensions.FMap(AddOne);
-            public static readonly Func<Maybe<string>, Maybe<int>> ElevatedConst42 = MaybeExtensions.FMap(42.ToConst().WithInput<string>());
+            public static readonly Func<Maybe<int>, Maybe<int>> ElevatedAddOne = Maybe.FMap(AddOne);
+            public static readonly Func<Maybe<string>, Maybe<int>> ElevatedConst42 = Maybe.FMap(42.ToConst().WithInput<string>());
 
             [Fact]
             public void Elevated_function_maps_nothing_to_nothing()
@@ -77,7 +77,7 @@ namespace Lette.Functional.CSharp.Tests
                 // Assert that:
                 // fmap id = id
 
-                private static readonly Func<Maybe<int>, Maybe<int>> ElevatedId = MaybeExtensions.FMap((Func<int,int>)Id);
+                private static readonly Func<Maybe<int>, Maybe<int>> ElevatedId = Maybe.FMap((Func<int,int>)Id);
 
                 [Fact]
                 public void Nothing()
@@ -107,10 +107,10 @@ namespace Lette.Functional.CSharp.Tests
                 public static readonly Func<int, double> DivBy4 = i => i / 4.0;
 
                 public static readonly Func<Maybe<string>, Maybe<double>> ComposedThenElevated =
-                    MaybeExtensions.FMap(Length.Compose(DivBy4));
+                    Maybe.FMap(Length.Compose(DivBy4));
 
                 public static readonly Func<Maybe<string>, Maybe<double>> ElevatedThenComposed =
-                    MaybeExtensions.FMap(Length).Compose(MaybeExtensions.FMap(DivBy4));
+                    Maybe.FMap(Length).Compose(Maybe.FMap(DivBy4));
 
                 [Fact]
                 public void Nothing()
@@ -136,7 +136,7 @@ namespace Lette.Functional.CSharp.Tests
             [Property]
             public bool Pure_returns_just_a_value(int i)
             {
-                return MaybeExtensions.Pure(i).Equals(Maybe<int>.Just(i));
+                return Maybe.Pure(i).Equals(Maybe<int>.Just(i));
             }
 
             public static readonly Func<int, int> IntDivBy2 = x => x / 2;
@@ -187,7 +187,7 @@ namespace Lette.Functional.CSharp.Tests
                 // apply (pure id) v = v
 
                 var v = Maybe<int>.Nothing;
-                var pureId = MaybeExtensions.Pure((Func<int, int>)Id);
+                var pureId = Maybe.Pure((Func<int, int>)Id);
 
                 var left = pureId.Apply(v);
                 var right = v;
@@ -199,7 +199,7 @@ namespace Lette.Functional.CSharp.Tests
             public bool First_law_for_just(byte b)
             {
                 var v = Maybe<byte>.Just(b);
-                var pureId = MaybeExtensions.Pure((Func<byte, byte>)Id);
+                var pureId = Maybe.Pure((Func<byte, byte>)Id);
 
                 var left = pureId.Apply(v);
                 var right = v;
@@ -217,8 +217,8 @@ namespace Lette.Functional.CSharp.Tests
                 Func<string, int> f = s => s.Length;
                 var x = "some string";
 
-                var left = MaybeExtensions.Pure(f).Apply(MaybeExtensions.Pure(x));
-                var right = MaybeExtensions.Pure(f(x));
+                var left = Maybe.Pure(f).Apply(Maybe.Pure(x));
+                var right = Maybe.Pure(f(x));
 
                 Assert.Equal(left, right);
             }
@@ -235,11 +235,11 @@ namespace Lette.Functional.CSharp.Tests
 
                 Maybe<Func<int, int>> u = Maybe<Func<int, int>>.Just(i => i + 1);
 
-                var left = u.Apply(MaybeExtensions.Pure(y));
+                var left = u.Apply(Maybe.Pure(y));
 
                 //                           \x -> x y
                 Func<Func<int, int>, int> f = h => h(y);
-                var right = MaybeExtensions.Pure(f).Apply(u);
+                var right = Maybe.Pure(f).Apply(u);
 
                 return left.Equals(right);
             }
@@ -260,7 +260,7 @@ namespace Lette.Functional.CSharp.Tests
                 // \g h x -> (g . h) x
                 //            g(  h( x ))
 
-                var right = MaybeExtensions.Pure(ComposeRight<int, int, int>()).Apply(u).Apply(v).Apply(w);
+                var right = Maybe.Pure(ComposeRight<int, int, int>()).Apply(u).Apply(v).Apply(w);
 
                 return left.Equals(right);
             }
@@ -337,7 +337,7 @@ namespace Lette.Functional.CSharp.Tests
 
                 Func<int, Maybe<int>> k = x => Maybe<int>.Just(x + 1);
 
-                var left = MaybeExtensions.Pure(a).Bind(k);
+                var left = Maybe.Pure(a).Bind(k);
                 var right = k(a);
 
                 return left.Equals(right);
@@ -351,7 +351,7 @@ namespace Lette.Functional.CSharp.Tests
 
                 var m = Maybe<byte>.Just(b);
 
-                var left = m.Bind(MaybeExtensions.Pure);
+                var left = m.Bind(Maybe.Pure);
                 var right = m;
 
                 return left.Equals(right);
@@ -365,7 +365,7 @@ namespace Lette.Functional.CSharp.Tests
 
                 var m = Maybe<byte>.Nothing;
 
-                var left = m.Bind(MaybeExtensions.Pure);
+                var left = m.Bind(Maybe.Pure);
                 var right = m;
 
                 Assert.Equal(left, right);
