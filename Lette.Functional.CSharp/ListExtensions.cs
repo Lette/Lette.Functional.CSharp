@@ -22,7 +22,13 @@ namespace Lette.Functional.CSharp
         // apply :: f(a -> b) -> f a -> f b
         public static Func<List<TIn>, List<TOut>> Apply<TIn, TOut>(this List<Func<TIn, TOut>> mf)
         {
-            return input => mf.SelectMany(f => input.Select(i => f(i))).ToList();
+            return input => mf.Apply(input);
         }
+
+        public static List<TOut> Apply<TIn, TOut>(this List<Func<TIn, TOut>> mf, List<TIn> input)
+        {
+            return mf.SelectMany(f => input.Select(i => f(i))).ToList();
+        }
+
     }
 }

@@ -182,7 +182,7 @@ namespace Lette.Functional.CSharp.Tests
                         IntDivBy2(4), IntDivBy2(8), IntDivBy2(15),
                         IntDivBy4(4), IntDivBy4(8), IntDivBy4(15)
                     },
-                    functions.Apply()(args));
+                    functions.Apply(args));
             }
         }
     }
