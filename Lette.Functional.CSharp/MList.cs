@@ -65,7 +65,12 @@ namespace Lette.Functional.CSharp
         // fmap :: (a -> b) -> f a -> f b
         public static Func<MList<TIn>, MList<TOut>> FMMap<TIn, TOut>(this Func<TIn, TOut> f)
         {
-            return inputList => inputList.Match(
+            return input => f.FMMap(input);
+        }
+
+        public static MList<TOut> FMMap<TIn, TOut>(this Func<TIn, TOut> f, MList<TIn> input)
+        {
+            return input.Match(
                 empty: ()      => MList<TOut>.Empty,
                 list:  (x, xs) => MList<TOut>.List(f(x), f.FMMap()(xs)));
         }
