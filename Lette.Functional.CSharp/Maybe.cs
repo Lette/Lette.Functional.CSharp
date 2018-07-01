@@ -109,8 +109,13 @@ namespace Lette.Functional.CSharp
         // apply :: f(a -> b) -> f a -> f b
         public static Func<Maybe<TIn>, Maybe<TOut>> Apply<TIn, TOut>(this Maybe<Func<TIn, TOut>> mf)
         {
-            return mi => mf.Match(
-                just:    f  => mi.Match(
+            return input => mf.Apply(input);
+        }
+
+        public static Maybe<TOut> Apply<TIn, TOut>(this Maybe<Func<TIn, TOut>> mf, Maybe<TIn> input)
+        {
+            return mf.Match(
+                just:    f  => input.Match(
                     just:    i  => Maybe<TOut>.Just(f(i)),
                     nothing: () => Maybe<TOut>.Nothing),
                 nothing: () => Maybe<TOut>.Nothing);
