@@ -12,10 +12,20 @@ namespace Lette.Functional.CSharp
 
         private class JustImpl : Maybe<T>
         {
+            private static readonly bool WrappedTypeCanBeNull =
+                typeof(T).IsClass
+                ||
+                typeof(T).IsGenericType && typeof(T).GetGenericTypeDefinition() == typeof(Nullable<>);
+
             private readonly T _value;
 
             public JustImpl(T value)
             {
+                if (WrappedTypeCanBeNull && Equals(value, default))
+                {
+                    throw new ArgumentNullException(nameof(value));
+                }
+
                 _value = value;
             }
 

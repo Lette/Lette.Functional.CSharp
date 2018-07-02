@@ -8,6 +8,41 @@ namespace Lette.Functional.CSharp.Tests
 {
     public class MaybeTests
     {
+        public class FactoryMethodTests
+        {
+            [Fact]
+            public void Disallows_null_values_of_reference_types()
+            {
+                Assert.Throws<ArgumentNullException>("value", () => Maybe<string>.Just(null));
+            }
+
+            [Fact]
+            public void Allows_non_null_values_of_reference_types()
+            {
+                var ex = Record.Exception(() => Maybe<string>.Just(""));
+
+                Assert.Null(ex);
+            }
+
+            [Fact]
+            public void Disallows_null_values_of_nullables()
+            {
+                // EXPERIMENTAL: Is this really expected?
+
+                Assert.Throws<ArgumentNullException>("value", () => Maybe<int?>.Just(null));
+            }
+
+            [Fact]
+            public void Allows_non_null_values_of_nullables()
+            {
+                // EXPERIMENTAL: Is this really expected?
+
+                var ex = Record.Exception(() => Maybe<int?>.Just(0));
+
+                Assert.Null(ex);
+            }
+        }
+
         public class EqualityTests
         {
             [Fact]
@@ -62,11 +97,11 @@ namespace Lette.Functional.CSharp.Tests
             }
 
             [Property]
-            public bool Elevated_constant_function_maps_just_anything_to_just_constant_value(string s, int value)
+            public bool Elevated_constant_function_maps_just_anything_to_just_constant_value(NonNull<string> s, int value)
             {
                 var constMap = value.FConstMap<string, int>();
 
-                return constMap(Maybe<string>.Just(s)).Equals(Maybe<int>.Just(value));
+                return constMap(Maybe<string>.Just(s.Item)).Equals(Maybe<int>.Just(value));
             }
         }
 
