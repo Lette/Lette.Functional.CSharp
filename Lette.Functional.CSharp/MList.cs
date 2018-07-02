@@ -45,16 +45,16 @@ namespace Lette.Functional.CSharp
             }
         }
 
-        private readonly MListComparer<T> _comparer = new MListComparer<T>();
+        private static readonly MListComparer<T> Comparer = new MListComparer<T>();
 
         public override bool Equals(object obj)
         {
-            return _comparer.Equals(this, (MList<T>)obj);
+            return Comparer.Equals(this, (MList<T>)obj);
         }
 
         public override int GetHashCode()
         {
-            return _comparer.GetHashCode(this);
+            return Comparer.GetHashCode(this);
         }
     }
 
@@ -80,7 +80,7 @@ namespace Lette.Functional.CSharp
         // pure :: a -> f a
         public static MList<T> Pure<T>(this T t) => MList<T>.List(t, MList<T>.Empty);
 
-        // apply :: f(a -> b) -> (f a -> f b)
+        // apply :: f (a -> b) -> (f a -> f b)
         public static Func<MList<TIn>, MList<TOut>> Apply<TIn, TOut>(this MList<Func<TIn, TOut>> mf)
         {
             // fs <*> xs = [f x | f <- fs, x <- xs]
@@ -88,7 +88,7 @@ namespace Lette.Functional.CSharp
             return input => mf.Apply(input);
         }
 
-        // apply :: f(a -> b) -> f a -> f b
+        // apply :: f (a -> b) -> f a -> f b
         public static MList<TOut> Apply<TIn, TOut>(this MList<Func<TIn, TOut>> mf, MList<TIn> input)
         {
             // fs <*> xs = [f x | f <- fs, x <- xs]
@@ -117,14 +117,12 @@ namespace Lette.Functional.CSharp
 
         public static MList<T> Reverse<T>(this MList<T> list)
         {
-            var result = MList<T>.Empty;
-
             MList<T> Inner(MList<T> xs, MList<T> acc) 
                 => xs.Match(
                     empty: ()      => acc,
                     list:  (y, ys) => Inner(ys, MList<T>.List(y, acc)));
 
-            return Inner(list, result);
+            return Inner(list, MList<T>.Empty);
         }
     }
 
