@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using FsCheck;
 using FsCheck.Xunit;
@@ -81,6 +82,32 @@ namespace Lette.Functional.CSharp.Tests
                 var reversedList = CreateList("z", "y", "x", "w");
 
                 Assert.Equal(reversedList, list.Reverse());
+            }
+
+            [Fact]
+            public void Concat_of_two_empty_lists_is_an_empty_list()
+            {
+                var result = MList.Concat(MList<int>.Empty, MList<int>.Empty);
+
+                Assert.Equal(MList<int>.Empty, result);
+            }
+
+            [Fact]
+            public void Concat_of_a_non_empty_list_and_an_empty_list_is_the_non_empty_list()
+            {
+                Assert.Equal(CreateList(1, 2), MList.Concat(CreateList(1, 2), MList<int>.Empty));
+                Assert.Equal(CreateList(1, 2), MList.Concat(MList<int>.Empty, CreateList(1, 2)));
+            }
+
+            [Fact]
+            public void Concat_of_two_lists_returns_one_list_with_all_elements()
+            {
+                var list1 = CreateList(1, 2, 3);
+                var list2 = CreateList(4, 5);
+
+                var result = MList.Concat(list1, list2);
+
+                Assert.Equal(CreateList(1, 2, 3, 4, 5), result);
             }
         }
 
@@ -350,7 +377,88 @@ namespace Lette.Functional.CSharp.Tests
 
         public class MonadTests
         {
-            // TODO
+            [Fact]
+            public void Join_of_empty_list_of_lists_is_empty_list()
+            {
+                var emptyListOfLists = MList<MList<int>>.Empty;
+
+                var result = MList.Join(emptyListOfLists);
+
+                Assert.Equal(MList<int>.Empty, result);
+            }
+
+            [Fact]
+            public void Join_of_single_list_with_a_single_item_is_a_list_with_a_single_item()
+            {
+                var list = MList<int>.List(1, MList<int>.Empty);
+                var listOfLists = MList<MList<int>>.List(list, MList<MList<int>>.Empty);
+
+                var result = MList.Join(listOfLists);
+
+                Assert.Equal(MList<int>.List(1, MList<int>.Empty), result);
+            }
+
+            [Fact]
+            public void Join_of_single_list_with_multiple_items_is_a_list_with_multiple_items()
+            {
+                var list = CreateList(1, 2, 3);
+                var listOfLists = CreateList(list);
+
+                var result = MList.Join(listOfLists);
+
+                Assert.Equal(CreateList(1, 2, 3), result);
+            }
+
+            [Fact]
+            public void Join_of_multiple_lists_with_multiple_values_is_a_single_list_of_all_values()
+            {
+                var list1 = CreateList('a', 'b', 'c');
+                var list2 = CreateList('d', 'e', 'f');
+                var listOfLists = CreateList(list1, list2);
+
+                var result = MList.Join(listOfLists);
+
+                Assert.Equal(CreateList('a', 'b', 'c', 'd', 'e', 'f'), result);
+            }
+
+            [Fact]
+            public void Bind_empty_list_returns_empty_list()
+            {
+                var input = MList<string>.Empty;
+                Func<string, MList<int>> f = s => null;
+
+                var actual = input.Bind(f);
+
+                var expected = MList<int>.Empty;
+
+                Assert.Equal(expected, actual);
+            }
+
+            [Fact]
+            public void Bind_one_element_list_returns_result_of_bound_function()
+            {
+                var input = MList<string>.List("abc", MList<string>.Empty);
+                Func<string, MList<int>> f = s => CreateList(s.Select(c => (int)c));
+
+                var actual = input.Bind(f);
+
+                var expected = CreateList((int)'a', 'b', 'c');
+
+                Assert.Equal(expected, actual);
+            }
+
+            [Fact]
+            public void Bind_two_element_list_returns_concatenated_results_of_bound_function()
+            {
+                var input = CreateList("abc", "AB");
+                Func<string, MList<int>> f = s => CreateList(s.Select(c => (int)c));
+
+                var actual = input.Bind(f);
+
+                var expected = CreateList((int)'a', 'b', 'c', 'A', 'B');
+
+                Assert.Equal(expected, actual);
+            }
         }
 
         public class MonadLaws
@@ -361,6 +469,11 @@ namespace Lette.Functional.CSharp.Tests
         public class KleisliTests
         {
             // TODO
+        }
+
+        public static MList<T> CreateList<T>(IEnumerable<T> items)
+        {
+            return CreateList(items.ToArray());
         }
 
         public static MList<T> CreateList<T>(params T[] items)

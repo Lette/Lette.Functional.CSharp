@@ -106,6 +106,25 @@ namespace Lette.Functional.CSharp
             return Outer(mf, input, MList<TOut>.Empty).Reverse();
         }
 
+        // MONAD
+
+        // join :: m (m a) -> m a
+        public static MList<T> Join<T>(MList<MList<T>> lists)
+        {
+            return lists.Match(
+                empty: ()      => MList<T>.Empty,
+                list:  (x, xs) => Concat(x, Join(xs)));
+        }
+
+        // bind :: m a -> (a -> m b) -> m b
+        public static MList<TOut> Bind<TIn, TOut>(this MList<TIn> input, Func<TIn, MList<TOut>> f)
+        {
+            // Haskell implementation for 'instance Monad List':
+            //    input >>= f = join $ fmap f input
+
+            return Join(FMap(f, input));
+        }
+
         // UTILITY
 
         public static int Length<T>(this MList<T> list)
@@ -123,6 +142,20 @@ namespace Lette.Functional.CSharp
                     list:  (y, ys) => Inner(ys, MList<T>.List(y, acc)));
 
             return Inner(list, MList<T>.Empty);
+        }
+
+        public static MList<T> Concat<T>(MList<T> first, MList<T> second)
+        {
+            MList<T> PrependList(MList<T> xs, MList<T> acc)
+                => xs.Match(
+                    empty: ()      => acc,
+                    list:  (y, ys) => PrependList(ys, MList<T>.List(y, acc)));
+
+            return first.Match(
+                empty: ()      => second,
+                list:  (x, xs) => second.Match(
+                    empty: ()      => first,
+                    list:  (y, ys) => PrependList(first.Reverse(), second)));
         }
     }
 
