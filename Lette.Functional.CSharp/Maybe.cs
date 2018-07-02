@@ -8,7 +8,7 @@ namespace Lette.Functional.CSharp
         public static Maybe<T> Just(T value) => new JustImpl(value);
         public static Maybe<T> Nothing => new NothingImpl();
 
-        public abstract TResult Match<TResult>(Func<T, TResult> just, Func<TResult> nothing);
+        public abstract TOut Match<TOut>(Func<T, TOut> just, Func<TOut> nothing);
 
         private class JustImpl : Maybe<T>
         {
@@ -19,7 +19,7 @@ namespace Lette.Functional.CSharp
                 _value = value;
             }
 
-            public override TResult Match<TResult>(Func<T, TResult> just, Func<TResult> nothing)
+            public override TOut Match<TOut>(Func<T, TOut> just, Func<TOut> nothing)
             {
                 return just(_value);
             }
@@ -32,7 +32,7 @@ namespace Lette.Functional.CSharp
 
         private class NothingImpl : Maybe<T>
         {
-            public override TResult Match<TResult>(Func<T, TResult> just, Func<TResult> nothing)
+            public override TOut Match<TOut>(Func<T, TOut> just, Func<TOut> nothing)
             {
                 return nothing();
             }
@@ -43,16 +43,16 @@ namespace Lette.Functional.CSharp
             }
         }
 
-        private readonly MaybeComparer<T> _comparer = new MaybeComparer<T>();
+        private static readonly MaybeComparer<T> Comparer = new MaybeComparer<T>();
 
         public override bool Equals(object obj)
         {
-            return _comparer.Equals(this, (Maybe<T>)obj);
+            return Comparer.Equals(this, (Maybe<T>)obj);
         }
 
         public override int GetHashCode()
         {
-            return _comparer.GetHashCode(this);
+            return Comparer.GetHashCode(this);
         }
     }
 
@@ -104,19 +104,20 @@ namespace Lette.Functional.CSharp
         // APPLICATIVE
 
         // pure :: a -> f a
-        public static Maybe<T> Pure<T>(this T t) => Maybe<T>.Just(t);
+        public static Maybe<T> Pure<T>(this T value) => Maybe<T>.Just(value);
 
-        // apply :: f(a -> b) -> f a -> f b
+        // apply :: f (a -> b) -> (f a -> f b)
         public static Func<Maybe<TIn>, Maybe<TOut>> Apply<TIn, TOut>(this Maybe<Func<TIn, TOut>> mf)
         {
             return input => mf.Apply(input);
         }
 
+        // apply :: f (a -> b) -> f a -> f b
         public static Maybe<TOut> Apply<TIn, TOut>(this Maybe<Func<TIn, TOut>> mf, Maybe<TIn> input)
         {
             return mf.Match(
                 just:    f  => input.Match(
-                    just:    i  => Maybe<TOut>.Just(f(i)),
+                    just:    x  => Maybe<TOut>.Just(f(x)),
                     nothing: () => Maybe<TOut>.Nothing),
                 nothing: () => Maybe<TOut>.Nothing);
         }
@@ -155,8 +156,8 @@ namespace Lette.Functional.CSharp
 
         public static Func<TIn, Result<TOut>> ToResult<TIn, TOut>(this Func<TIn, Maybe<TOut>> func, string errorMessage)
         {
-            return @in => func(@in).Match(
-                just: @out => Result<TOut>.Ok(@out),
+            return input => func(input).Match(
+                just:    x  => Result<TOut>.Ok(x),
                 nothing: () => Result<TOut>.Error(errorMessage));
         }
     }
