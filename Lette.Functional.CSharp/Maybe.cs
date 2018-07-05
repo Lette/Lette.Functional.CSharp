@@ -91,10 +91,16 @@ namespace Lette.Functional.CSharp
     {
         // FUNCTOR
 
-        // fmap :: (a -> b) -> f a -> f b
+        // fmap :: (a -> b) -> (f a -> f b)
         public static Func<Maybe<TIn>, Maybe<TOut>> FMap<TIn, TOut>(this Func<TIn, TOut> f)
         {
-            return maybeIn => maybeIn.Match(
+            return input => FMap(f, input);
+        }
+
+        // fmap :: (a -> b) -> f a -> f b
+        public static Maybe<TOut> FMap<TIn, TOut>(this Func<TIn, TOut> f, Maybe<TIn> input)
+        {
+            return input.Match(
                 just:    x  => Maybe<TOut>.Just(f(x)),
                 nothing: () => Maybe<TOut>.Nothing);
         }
@@ -134,27 +140,32 @@ namespace Lette.Functional.CSharp
 
         // MONAD
 
+        // join :: m (m a) -> m a
+        public static Maybe<T> Join<T>(Maybe<Maybe<T>> maybes)
+        {
+            return maybes.Match(
+                just:    m  => m,
+                nothing: () => Maybe<T>.Nothing);
+        }
+
         // bind :: m a -> (a -> m b) -> m b
         public static Maybe<TOut> Bind<TIn, TOut>(
             this Maybe<TIn> input,
             Func<TIn, Maybe<TOut>> f)
         {
-            return input.Match(
-                just:    x  => f(x),
-                nothing: () => Maybe<TOut>.Nothing);
+            // Standard definition of Bind, should work for all Monads!
+            return Join(FMap(f, input));
         }
 
-        // altBind :: (a -> m b) -> m a -> m b
+        // altBind :: (a -> m b) -> (m a -> m b)
         public static Func<Maybe<TIn>, Maybe<TOut>> AltBind<TIn, TOut>(this Func<TIn, Maybe<TOut>> f)
         {
-            return input => input.Match(
-                just:    x  => f(x),
-                nothing: () => Maybe<TOut>.Nothing);
+            return input => input.Bind(f);
         }
 
         // KLEISLI COMPOSITION
 
-        // (>=>) :: Monad m => (a -> m b) -> (b -> m c) -> a -> m c
+        // (>=>) :: Monad m => (a -> m b) -> (b -> m c) -> (a -> m c)
         public static Func<TIn, Maybe<TOut>> KBind<TIn, TIntermediate, TOut>(
             this Func<TIn, Maybe<TIntermediate>> first,
             Func<TIntermediate, Maybe<TOut>> second)
@@ -164,6 +175,7 @@ namespace Lette.Functional.CSharp
 
         // UTILITY
 
+        // toResult :: (a -> Maybe b) -> String -> (a -> Result b)
         public static Func<TIn, Result<TOut>> ToResult<TIn, TOut>(this Func<TIn, Maybe<TOut>> func, string errorMessage)
         {
             return input => func(input).Match(

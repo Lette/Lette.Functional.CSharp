@@ -359,6 +359,24 @@ namespace Lette.Functional.CSharp.Tests
 
                 Assert.Equal(returnValue, result);
             }
+
+            [Fact]
+            public void Join_nothing_returns_nothing()
+            {
+                Assert.Equal(Maybe<int>.Nothing, Maybe.Join(Maybe<Maybe<int>>.Nothing));
+            }
+
+            [Fact]
+            public void Join_just_nothing_returns_nothing()
+            {
+                Assert.Equal(Maybe<int>.Nothing, Maybe.Join(Maybe<Maybe<int>>.Just(Maybe<int>.Nothing)));
+            }
+
+            [Fact]
+            public void Join_just_just_returns_just()
+            {
+                Assert.Equal(Maybe<int>.Just(1), Maybe.Join(Maybe<Maybe<int>>.Just(Maybe<int>.Just(1))));
+            }
         }
 
         public class MonadLaws
