@@ -116,9 +116,7 @@ namespace Lette.Functional.CSharp.Tests
             [Fact]
             public void Empty_list_is_mapped_to_empty_list()
             {
-                Func<int, string> f = null;
-
-                var result = f.FMap(MList<int>.Empty);
+                var result = MList.FMap<int, string>(null, MList<int>.Empty);
 
                 Assert.Equal(MList<string>.Empty, result);
             }
@@ -500,7 +498,7 @@ namespace Lette.Functional.CSharp.Tests
 
                 Func<int, MList<int>> k = x => CreateList(x + 2, x + 3);
                 Func<int, MList<int>> h = x => CreateList(x * 2, x * 3);
-                var m = MList<int>.List(i, MList<int>.Empty);
+                var m = CreateList(Enumerable.Repeat(i, length).ToArray());
 
                 var left = m.Bind(x => k(x).Bind(h));
                 var right = m.Bind(k).Bind(h);
