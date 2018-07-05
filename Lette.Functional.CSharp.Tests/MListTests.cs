@@ -463,7 +463,50 @@ namespace Lette.Functional.CSharp.Tests
 
         public class MonadLaws
         {
-            // TODO
+            [Property]
+            public bool Left_identity(int a)
+            {
+                // return a >>= k  = k a
+                // pure a >>= k    = k a
+                // bind (pure a) k = k a
+
+                Func<int, MList<int>> k = x => CreateList(x + 1, x + 2);
+
+                var left = MList.Pure(a).Bind(k);
+                var right = k(a);
+
+                return left.Equals(right);
+            }
+
+            [Property]
+            public bool Right_identity(byte length, byte b)
+            {
+                // m >>= return = m
+                // bind m pure  = m
+
+                var m = CreateList(Enumerable.Repeat(b, length).ToArray());
+
+                var left = m.Bind(MList.Pure);
+                var right = m;
+
+                return left.Equals(right);
+            }
+
+            [Property]
+            public bool Associativity(byte length, int i)
+            {
+                // m >>= (\x -> k x >>= h)     = (m >>= k) >>= h
+                // bind m (\x -> bind (k x) h) = bind (bind m k) h
+
+                Func<int, MList<int>> k = x => CreateList(x + 2, x + 3);
+                Func<int, MList<int>> h = x => CreateList(x * 2, x * 3);
+                var m = MList<int>.List(i, MList<int>.Empty);
+
+                var left = m.Bind(x => k(x).Bind(h));
+                var right = m.Bind(k).Bind(h);
+
+                return left.Equals(right);
+            }
         }
 
         public class KleisliTests
