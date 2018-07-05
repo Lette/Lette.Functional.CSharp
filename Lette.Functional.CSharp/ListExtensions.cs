@@ -19,7 +19,7 @@ namespace Lette.Functional.CSharp
         // pure :: a -> f a
         public static List<T> Pure<T>(this T t) => new List<T> { t };
 
-        // apply :: f(a -> b) -> f a -> f b
+        // apply :: f (a -> b) -> (f a -> f b)
         public static Func<List<TIn>, List<TOut>> Apply<TIn, TOut>(this List<Func<TIn, TOut>> mf)
         {
             return input => mf.Apply(input);
@@ -29,6 +29,5 @@ namespace Lette.Functional.CSharp
         {
             return mf.SelectMany(f => input.Select(i => f(i))).ToList();
         }
-
     }
 }

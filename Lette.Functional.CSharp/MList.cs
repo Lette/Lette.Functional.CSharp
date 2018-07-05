@@ -62,12 +62,13 @@ namespace Lette.Functional.CSharp
     {
         // FUNCTOR
 
-        // fmap :: (a -> b) -> f a -> f b
+        // fmap :: (a -> b) -> (f a -> f b)
         public static Func<MList<TIn>, MList<TOut>> FMap<TIn, TOut>(this Func<TIn, TOut> f)
         {
             return input => f.FMap(input);
         }
 
+        // fmap :: (a -> b) -> f a -> f b
         public static MList<TOut> FMap<TIn, TOut>(this Func<TIn, TOut> f, MList<TIn> input)
         {
             return input.Match(
@@ -136,7 +137,7 @@ namespace Lette.Functional.CSharp
 
         public static MList<T> Reverse<T>(this MList<T> list)
         {
-            MList<T> Inner(MList<T> xs, MList<T> acc) 
+            MList<T> Inner(MList<T> xs, MList<T> acc)
                 => xs.Match(
                     empty: ()      => acc,
                     list:  (y, ys) => Inner(ys, MList<T>.List(y, acc)));

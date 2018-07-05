@@ -10,11 +10,11 @@ namespace Lette.Functional.CSharp.Railway
                 var input = ("        Your Name        ", "Your.Name@EMAIL.com");
 
                 var receiveRequest = ReceiveRequest.ToResult("Could not receive request.");
-                var validate = ResultExtensions.Bind(ValidateRequest2);
-                var canonicalizeName = ResultExtensions.Map(CanonicalizeName);
-                var canonicalizeEmail = ResultExtensions.Map(CanonicalizeEmail);
-                var updateDb = ResultExtensions.Map(UpdateDbFromRequest);
-                var sendEmail = ResultExtensions.TryMap(SendEmail.CallWithEmail());
+                var validate = Result.Bind(ValidateRequest2);
+                var canonicalizeName = Result.Map(CanonicalizeName);
+                var canonicalizeEmail = Result.Map(CanonicalizeEmail);
+                var updateDb = Result.Map(UpdateDbFromRequest);
+                var sendEmail = Result.TryMap(SendEmail.CallWithEmail());
 
                 //var workFlow = receiveRequest
                 //    .Compose(validate)
@@ -50,8 +50,8 @@ namespace Lette.Functional.CSharp.Railway
             request => request
                 .ForwardPipe(
                     NameNotBlank
-                        .Compose(ResultExtensions.Bind(NameNotTooLong))
-                        .Compose(ResultExtensions.Bind(EmailNotBlank))
+                        .Compose(Result.Bind(NameNotTooLong))
+                        .Compose(Result.Bind(EmailNotBlank))
                 );
 
         private static readonly Func<Request, Result<Request>> NameNotBlank =
@@ -74,8 +74,8 @@ namespace Lette.Functional.CSharp.Railway
 
         private static readonly Func<Request, Result<Request>> ValidateRequest2 =
             NameNotBlank
-                .Compose(ResultExtensions.Bind(NameNotTooLong))
-                .Compose(ResultExtensions.Bind(EmailNotBlank));
+                .Compose(Result.Bind(NameNotTooLong))
+                .Compose(Result.Bind(EmailNotBlank));
 
         private static readonly Func<Request, Request> CanonicalizeName =
             request => request.WithName(request.Name.Trim());
@@ -92,7 +92,10 @@ namespace Lette.Functional.CSharp.Railway
         private static readonly Action<string> SendEmail =
             email =>
             {
-                if (email.StartsWith("fail")) throw new InvalidOperationException("Sending mail failed!");
+                if (email.StartsWith("fail"))
+                {
+                    throw new InvalidOperationException("Sending mail failed!");
+                }
             };
 
         private static readonly Func<Result<Request>, string> CreateMessage =

@@ -50,13 +50,13 @@ namespace Lette.Functional.CSharp
         }
     }
 
-    public static class ResultExtensions
+    public static class Result
     {
         public static Func<Result<TIn>, Result<TOut>> Bind<TIn, TOut>(Func<TIn, Result<TOut>> func)
         {
             return result => result.Match(
-                ok:    @in => func(@in),
-                error: msg => Result<TOut>.Error(msg));
+                ok:    input => func(input),
+                error: msg   => Result<TOut>.Error(msg));
         }
 
         public static Func<Result<TIn>, Result<TOut>> Map<TIn, TOut>(Func<TIn, TOut> func)
@@ -67,10 +67,10 @@ namespace Lette.Functional.CSharp
         public static Func<Result<T>, Result<T>> Map<T>(Action<T> action)
         {
             return t => t.Match(
-                ok: @in =>
+                ok: input =>
                 {
-                    action(@in);
-                    return Result<T>.Ok(@in);
+                    action(input);
+                    return Result<T>.Ok(input);
                 },
                 error: msg => Result<T>.Error(msg));
         }
@@ -78,11 +78,11 @@ namespace Lette.Functional.CSharp
         public static Func<Result<TIn>, Result<TOut>> TryMap<TIn, TOut>(Func<TIn, TOut> func)
         {
             return result => result.Match(
-                ok: @in =>
+                ok: input =>
                 {
                     try
                     {
-                        return Result<TOut>.Ok(func(@in));
+                        return Result<TOut>.Ok(func(input));
                     }
                     catch (Exception ex)
                     {
@@ -95,12 +95,12 @@ namespace Lette.Functional.CSharp
         public static Func<Result<T>, Result<T>> TryMap<T>(Action<T> action)
         {
             return result => result.Match(
-                ok: @in =>
+                ok: input =>
                 {
                     try
                     {
-                        action(@in);
-                        return Result<T>.Ok(@in);
+                        action(input);
+                        return Result<T>.Ok(input);
                     }
                     catch (Exception ex)
                     {
@@ -121,9 +121,9 @@ namespace Lette.Functional.CSharp
 
         public static Func<TIn, Maybe<TOut>> ToMaybe<TIn, TOut>(this Func<TIn, Result<TOut>> func)
         {
-            return @in => func(@in).Match(
-                ok:    @out => Maybe<TOut>.Just(@out),
-                error: _    => Maybe<TOut>.Nothing);
+            return input => func(input).Match(
+                ok:    result => Maybe<TOut>.Just(result),
+                error: _      => Maybe<TOut>.Nothing);
         }
     }
 }
