@@ -176,6 +176,12 @@ namespace Lette.Functional.CSharp
 
             return TraverseElements(xs, initalValue);
         }
+
+        // FoldR :: (a -> acc -> acc) -> acc -> m a -> acc
+        public static TAcc FoldR<T, TAcc>(Func<T, TAcc, TAcc> f, TAcc initialValue, MList<T> xs)
+        {
+            return FoldL(Functional.Swap(f), initialValue, xs.Reverse());
+        }
     }
 
     public class MListComparer<T> : IEqualityComparer<MList<T>>

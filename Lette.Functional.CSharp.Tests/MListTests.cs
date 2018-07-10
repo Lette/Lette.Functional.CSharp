@@ -140,12 +140,29 @@ namespace Lette.Functional.CSharp.Tests
             }
 
             [Fact]
-            public void FoldL_calls_function_from_left_to_right()
+            public void FoldL_calls_function_with_arguments_from_left_to_right()
             {
                 var list = CreateList(1, 2, 3);
                 var result = MList.FoldL((acc, i) => $"{acc} {i}", "digits:", list);
 
                 Assert.Equal("digits: 1 2 3", result);
+            }
+
+            [Fact]
+            public void FoldR_on_empty_list_returns_initial_value()
+            {
+                var result = MList.FoldR((x, y) => null, "initial", MList<int>.Empty);
+
+                Assert.Equal("initial", result);
+            }
+
+            [Fact]
+            public void FoldR_calls_function_with_arguments_from_right_to_left()
+            {
+                var list = CreateList(1, 2, 3);
+                var result = MList.FoldR((i, acc) => $"{acc} {i}", "digits:", list);
+
+                Assert.Equal("digits: 3 2 1", result);
             }
         }
 
