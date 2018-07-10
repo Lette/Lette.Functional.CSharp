@@ -147,8 +147,8 @@ namespace Lette.Functional.CSharp
         {
             MList<T> TraverseLists(MList<MList<T>> yss, MList<T> acc)
                 => yss.Match(
-                    empty: () => acc,
-                    list: (zs, zss) => TraverseLists(zss, Combine(zs, acc)));
+                    empty: ()        => acc,
+                    list:  (zs, zss) => TraverseLists(zss, Combine(zs, acc)));
 
             return TraverseLists(xss.Reverse(), MList<T>.Empty);
         }
@@ -173,8 +173,8 @@ namespace Lette.Functional.CSharp
         {
             TAcc TraverseElements(MList<T> ys, TAcc acc)
                 => ys.Match(
-                    empty: () => acc,
-                    list: (z, zs) => TraverseElements(zs, f(acc, z)));
+                    empty: ()      => acc,
+                    list:  (z, zs) => TraverseElements(zs, f(acc, z)));
 
             return TraverseElements(xs, initalValue);
         }
