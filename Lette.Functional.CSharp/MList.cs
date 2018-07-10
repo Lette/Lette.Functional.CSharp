@@ -145,6 +145,17 @@ namespace Lette.Functional.CSharp
             return Inner(list, MList<T>.Empty);
         }
 
+        // Concat :: m (m a) -> m a
+        public static MList<T> Concat<T>(this MList<MList<T>> xss)
+        {
+            MList<T> TraverseLists(MList<MList<T>> yss, MList<T> acc)
+                => yss.Match(
+                    empty: () => acc,
+                    list: (zs, zss) => TraverseLists(zss, Combine(zs, acc)));
+
+            return TraverseLists(xss.Reverse(), MList<T>.Empty);
+        }
+
         // Combine :: m a -> m a -> m a
         public static MList<T> Combine<T>(MList<T> first, MList<T> second)
         {

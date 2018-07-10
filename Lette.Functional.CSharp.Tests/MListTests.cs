@@ -109,6 +109,27 @@ namespace Lette.Functional.CSharp.Tests
 
                 Assert.Equal(CreateList(1, 2, 3, 4, 5), result);
             }
+
+            [Fact]
+            public void Concat_empty_list_of_lists_returns_empty_list()
+            {
+                var actual = MList.Concat(MList<MList<int>>.Empty);
+
+                Assert.Equal(MList<int>.Empty, actual);
+            }
+
+            [Fact]
+            public void Concat_returns_concatenated_list()
+            {
+                var lists = CreateList(
+                    CreateList(1, 2),
+                    CreateList<int>(),
+                    CreateList(3, 4, 5));
+
+                Assert.Equal(
+                    CreateList(1, 2, 3, 4, 5),
+                    MList.Concat(lists));
+            }
         }
 
         public class FunctorTests
