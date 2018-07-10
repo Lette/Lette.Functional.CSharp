@@ -112,9 +112,7 @@ namespace Lette.Functional.CSharp
         // join :: m (m a) -> m a
         public static MList<T> Join<T>(MList<MList<T>> lists)
         {
-            return lists.Match(
-                empty: ()      => MList<T>.Empty,
-                list:  (x, xs) => Combine(x, Join(xs)));
+            return Concat(lists);
         }
 
         // bind :: m a -> (a -> m b) -> m b
