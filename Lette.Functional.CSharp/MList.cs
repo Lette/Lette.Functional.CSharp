@@ -128,6 +128,7 @@ namespace Lette.Functional.CSharp
 
         // UTILITY
 
+        // Length :: m a -> Int
         public static int Length<T>(this MList<T> list)
         {
             return list.Match(
@@ -135,14 +136,10 @@ namespace Lette.Functional.CSharp
                 list:  (x, xs) => 1 + xs.Length());
         }
 
+        // Reverse :: m a -> m a
         public static MList<T> Reverse<T>(this MList<T> list)
         {
-            MList<T> Inner(MList<T> xs, MList<T> acc)
-                => xs.Match(
-                    empty: ()      => acc,
-                    list:  (y, ys) => Inner(ys, MList<T>.List(y, acc)));
-
-            return Inner(list, MList<T>.Empty);
+            return FoldL((acc, t) => MList<T>.List(t, acc), MList<T>.Empty, list);
         }
 
         // Concat :: m (m a) -> m a
