@@ -170,6 +170,17 @@ namespace Lette.Functional.CSharp
                     empty: ()      => first,
                     list:  (y, ys) => PrependList(first.Reverse(), second)));
         }
+
+        // FoldL :: (acc -> a -> acc) -> acc -> m a -> acc
+        public static TAcc FoldL<T, TAcc>(Func<TAcc, T, TAcc> f, TAcc initalValue, MList<T> xs)
+        {
+            TAcc TraverseElements(MList<T> ys, TAcc acc)
+                => ys.Match(
+                    empty: () => acc,
+                    list: (z, zs) => TraverseElements(zs, f(acc, z)));
+
+            return TraverseElements(xs, initalValue);
+        }
     }
 
     public class MListComparer<T> : IEqualityComparer<MList<T>>

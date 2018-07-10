@@ -130,6 +130,23 @@ namespace Lette.Functional.CSharp.Tests
                     CreateList(1, 2, 3, 4, 5),
                     MList.Concat(lists));
             }
+
+            [Fact]
+            public void FoldL_on_empty_list_returns_initial_value()
+            {
+                var result = MList.FoldL((x, y) => null, "initial", MList<string>.Empty);
+
+                Assert.Equal("initial", result);
+            }
+
+            [Fact]
+            public void FoldL_calls_function_from_left_to_right()
+            {
+                var list = CreateList(1, 2, 3);
+                var result = MList.FoldL((acc, i) => $"{acc} {i}", "digits:", list);
+
+                Assert.Equal("digits: 1 2 3", result);
+            }
         }
 
         public class FunctorTests
