@@ -114,7 +114,7 @@ namespace Lette.Functional.CSharp
         {
             return lists.Match(
                 empty: ()      => MList<T>.Empty,
-                list:  (x, xs) => Concat(x, Join(xs)));
+                list:  (x, xs) => Combine(x, Join(xs)));
         }
 
         // bind :: m a -> (a -> m b) -> m b
@@ -145,7 +145,8 @@ namespace Lette.Functional.CSharp
             return Inner(list, MList<T>.Empty);
         }
 
-        public static MList<T> Concat<T>(MList<T> first, MList<T> second)
+        // Combine :: m a -> m a -> m a
+        public static MList<T> Combine<T>(MList<T> first, MList<T> second)
         {
             MList<T> PrependList(MList<T> xs, MList<T> acc)
                 => xs.Match(

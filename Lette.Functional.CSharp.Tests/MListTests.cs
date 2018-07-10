@@ -85,27 +85,27 @@ namespace Lette.Functional.CSharp.Tests
             }
 
             [Fact]
-            public void Concat_of_two_empty_lists_is_an_empty_list()
+            public void Combining_two_empty_lists_is_an_empty_list()
             {
-                var result = MList.Concat(MList<int>.Empty, MList<int>.Empty);
+                var result = MList.Combine(MList<int>.Empty, MList<int>.Empty);
 
                 Assert.Equal(MList<int>.Empty, result);
             }
 
             [Fact]
-            public void Concat_of_a_non_empty_list_and_an_empty_list_is_the_non_empty_list()
+            public void Combining_a_non_empty_list_and_an_empty_list_is_the_non_empty_list()
             {
-                Assert.Equal(CreateList(1, 2), MList.Concat(CreateList(1, 2), MList<int>.Empty));
-                Assert.Equal(CreateList(1, 2), MList.Concat(MList<int>.Empty, CreateList(1, 2)));
+                Assert.Equal(CreateList(1, 2), MList.Combine(CreateList(1, 2), MList<int>.Empty));
+                Assert.Equal(CreateList(1, 2), MList.Combine(MList<int>.Empty, CreateList(1, 2)));
             }
 
             [Fact]
-            public void Concat_of_two_lists_returns_one_list_with_all_elements()
+            public void Combining_two_lists_returns_one_list_with_all_elements()
             {
                 var list1 = CreateList(1, 2, 3);
                 var list2 = CreateList(4, 5);
 
-                var result = MList.Concat(list1, list2);
+                var result = MList.Combine(list1, list2);
 
                 Assert.Equal(CreateList(1, 2, 3, 4, 5), result);
             }
