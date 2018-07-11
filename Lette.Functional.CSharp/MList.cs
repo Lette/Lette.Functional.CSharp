@@ -167,20 +167,19 @@ namespace Lette.Functional.CSharp
         }
 
         // FoldL :: (acc -> a -> acc) -> acc -> m a -> acc
-        public static TAcc FoldL<T, TAcc>(Func<TAcc, T, TAcc> f, TAcc initialValue, MList<T> xs)
+        public static TAcc FoldL<T, TAcc>(Func<TAcc, T, TAcc> f, TAcc acc, MList<T> xs)
         {
-            TAcc TraverseElements(MList<T> ys, TAcc acc)
-                => ys.Match(
-                    empty: ()      => acc,
-                    list:  (z, zs) => TraverseElements(zs, f(acc, z)));
-
-            return TraverseElements(xs, initialValue);
+            return xs.Match(
+                empty: ()      => acc,
+                list:  (y, ys) => FoldL(f, f(acc, y), ys));
         }
 
         // FoldR :: (a -> acc -> acc) -> acc -> m a -> acc
-        public static TAcc FoldR<T, TAcc>(Func<T, TAcc, TAcc> f, TAcc initialValue, MList<T> xs)
+        public static TAcc FoldR<T, TAcc>(Func<T, TAcc, TAcc> f, TAcc acc, MList<T> xs)
         {
-            return FoldL(Functional.Swap(f), initialValue, xs.Reverse());
+            return xs.Match(
+                empty: ()      => acc,
+                list:  (y, ys) => f(y, FoldR(f, acc, ys)));
         }
     }
 
