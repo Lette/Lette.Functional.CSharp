@@ -88,12 +88,7 @@ namespace Lette.Functional.CSharp
         public static Func<T1, Func<T2, Func<T3, Func<T4, T5>>>> Curry<T1, T2, T3, T4, T5>(this Func<T1, T2, T3, T4, T5> f)
             => t1 => t2 => t3 => t4 => f(t1, t2, t3, t4);
 
-        public static TOut Swap<T1, T2, TOut>(Func<T1, T2, TOut> f, T2 t2, T1 t1)
-        {
-            return f(t1, t2);
-        }
-
-        public static Func<T2, T1, TOut> Swap<T1, T2, TOut>(Func<T1, T2, TOut> f)
+        public static Func<T2, T1, TOut> Flip<T1, T2, TOut>(Func<T1, T2, TOut> f)
         {
             return (t2, t1) => f(t1, t2);
         }
