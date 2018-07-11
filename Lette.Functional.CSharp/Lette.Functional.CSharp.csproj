@@ -58,6 +58,7 @@
     <Compile Include="Railway\UseCase.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Railway\Request.cs" />
+    <Compile Include="Recursion.cs" />
     <Compile Include="Result.cs" />
   </ItemGroup>
   <ItemGroup />
