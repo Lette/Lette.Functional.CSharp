@@ -46,6 +46,11 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ListExtensions.cs" />
+    <Compile Include="Ploeh\DepInj\MaitreD.cs" />
+    <Compile Include="Ploeh\DepInj\Reservation.cs" />
+    <Compile Include="Ploeh\DepInj\ReservationsInstruction.cs" />
+    <Compile Include="Ploeh\DepInj\ReservationsProgram.cs" />
+    <Compile Include="Ploeh\DepInj\ReservationsProgramInterpreter.cs" />
     <Compile Include="Railway\ActionExtensions.cs" />
     <Compile Include="Functional.cs" />
     <Compile Include="MList.cs" />
