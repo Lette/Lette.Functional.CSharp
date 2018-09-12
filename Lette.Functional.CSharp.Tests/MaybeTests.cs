@@ -70,6 +70,51 @@ namespace Lette.Functional.CSharp.Tests
             }
         }
 
+        public class PatternMatchingTests
+        {
+            [Fact]
+            public void Invokes_function_for_just()
+            {
+                var maybe = Maybe<int>.Just(1);
+
+                var result = maybe.Match(x => x + 1, () => -1);
+
+                Assert.Equal(2, result);
+            }
+
+            [Fact]
+            public void Invokes_function_for_nothing()
+            {
+                var maybe = Maybe<int>.Nothing;
+
+                var result = maybe.Match(x => x + 1, () => -1);
+
+                Assert.Equal(-1, result);
+            }
+
+            [Fact]
+            public void Invokes_action_for_just()
+            {
+                var maybe = Maybe<int>.Just(1);
+                var result = 0;
+
+                maybe.Match(x => { result = x + 1; }, () => { result = -1; });
+
+                Assert.Equal(2, result);
+            }
+
+            [Fact]
+            public void Invokes_action_for_nothing()
+            {
+                var maybe = Maybe<int>.Nothing;
+                var result = 0;
+
+                maybe.Match(x => { result = x + 1; }, () => { result = -1; });
+
+                Assert.Equal(-1, result);
+            }
+        }
+
         public class FunctorTests
         {
             public static readonly Func<int, int> AddOne = x => x + 1;

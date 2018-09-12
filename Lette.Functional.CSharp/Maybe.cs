@@ -9,6 +9,7 @@ namespace Lette.Functional.CSharp
         public static Maybe<T> Nothing => new NothingImpl();
 
         public abstract TOut Match<TOut>(Func<T, TOut> just, Func<TOut> nothing);
+        public abstract void Match(Action<T> just, Action nothing);
 
         private class JustImpl : Maybe<T>
         {
@@ -34,6 +35,11 @@ namespace Lette.Functional.CSharp
                 return just(_value);
             }
 
+            public override void Match(Action<T> just, Action nothing)
+            {
+                just(_value);
+            }
+
             public override string ToString()
             {
                 return "Just " + _value;
@@ -45,6 +51,11 @@ namespace Lette.Functional.CSharp
             public override TOut Match<TOut>(Func<T, TOut> just, Func<TOut> nothing)
             {
                 return nothing();
+            }
+
+            public override void Match(Action<T> just, Action nothing)
+            {
+                nothing();
             }
 
             public override string ToString()
