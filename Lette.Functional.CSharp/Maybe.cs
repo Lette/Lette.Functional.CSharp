@@ -6,13 +6,13 @@ namespace Lette.Functional.CSharp
     public abstract class Maybe<T>
     {
         /// <summary>
-        /// Returns a <see cref="Maybe&lt;T&gt;" /> that wraps a value. Throws <see cref="ArgumentNullException"/> if the value is null.
+        /// Returns a <see cref="Maybe{T}" /> that wraps a value. Throws <see cref="ArgumentNullException"/> if the value is null.
         /// </summary>
         /// <exception cref="ArgumentNullException" />
         public static Maybe<T> Just(T value) => new JustImpl(value);
 
         /// <summary>
-        /// Returns a <see cref="Maybe&lt;T&gt;" /> that represents the absense of a value.
+        /// Returns a <see cref="Maybe{T}" /> that represents the absence of a value.
         /// </summary>
         public static Maybe<T> Nothing => new NothingImpl();
 
@@ -108,6 +108,40 @@ namespace Lette.Functional.CSharp
 
     public static class Maybe
     {
+        // FACTORY METHODS
+
+        /// <summary>
+        /// Converts a reference type value to a <see cref="Maybe{T}"/>. Returns Nothing if the value is null, or a Just wrapping the
+        /// value otherwise.
+        /// If the value is known to be null or known to be non-null at compile time, use the specific factory methods
+        /// (<see cref="Maybe{T}.Just"/> or <see cref="Maybe{T}.Nothing"/>) instead.
+        /// </summary>
+        public static Maybe<T> ToMaybe<T>(this T value) where T : class
+        {
+            if (value == null)
+            {
+                return Maybe<T>.Nothing;
+            }
+
+            return Maybe<T>.Just(value);
+        }
+
+        /// <summary>
+        /// Converts a <see cref="Nullable{T}" /> to a <see cref="Maybe{T}"/>. Returns Nothing if the value is null, or a Just wrapping the
+        /// value otherwise.
+        /// If the value is known to be null or known to be non-null at compile time, use the specific factory methods
+        /// (<see cref="Maybe{T}.Just"/> or <see cref="Maybe{T}.Nothing"/>) instead.
+        /// </summary>
+        public static Maybe<T> ToMaybe<T>(this T? nullable) where T : struct
+        {
+            if (!nullable.HasValue)
+            {
+                return Maybe<T>.Nothing;
+            }
+
+            return Maybe<T>.Just(nullable.Value);
+        }
+
         // FUNCTOR
 
         // fmap :: (a -> b) -> (f a -> f b)

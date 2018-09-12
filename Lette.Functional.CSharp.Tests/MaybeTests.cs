@@ -41,6 +41,44 @@ namespace Lette.Functional.CSharp.Tests
 
                 Assert.Null(ex);
             }
+
+            [Fact]
+            public void Null_reference_is_converted_to_Nothing()
+            {
+                string nil = null;
+
+                var result = nil.ToMaybe();
+
+                Assert.Equal(Maybe<string>.Nothing, result);
+            }
+
+            [Property]
+            public void Non_null_reference_is_converted_to_Just(NonNull<string> value)
+            {
+                var result = value.Item.ToMaybe();
+
+                Assert.Equal(Maybe<string>.Just(value.Item), result);
+            }
+
+            [Property]
+            public void Nullable_with_value_is_converted_to_Just_of_underlying_type(int value)
+            {
+                int? nullableValue = value;
+
+                var result = nullableValue.ToMaybe();
+
+                Assert.Equal(Maybe<int>.Just(value), result);
+            }
+
+            [Fact]
+            public void Nullable_without_value_is_converted_to_Nothing_of_underlying_type()
+            {
+                int? nil = null;
+
+                var result = nil.ToMaybe();
+
+                Assert.Equal(Maybe<int>.Nothing, result);
+            }
         }
 
         public class EqualityTests
