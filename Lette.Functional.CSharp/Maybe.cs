@@ -5,7 +5,15 @@ namespace Lette.Functional.CSharp
 {
     public abstract class Maybe<T>
     {
+        /// <summary>
+        /// Returns a <see cref="Maybe&lt;T&gt;" /> that wraps a value. Throws <see cref="ArgumentNullException"/> if the value is null.
+        /// </summary>
+        /// <exception cref="ArgumentNullException" />
         public static Maybe<T> Just(T value) => new JustImpl(value);
+
+        /// <summary>
+        /// Returns a <see cref="Maybe&lt;T&gt;" /> that represents the absense of a value.
+        /// </summary>
         public static Maybe<T> Nothing => new NothingImpl();
 
         public abstract TOut Match<TOut>(Func<T, TOut> just, Func<TOut> nothing);
