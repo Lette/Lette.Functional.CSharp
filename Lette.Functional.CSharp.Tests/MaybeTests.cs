@@ -157,7 +157,6 @@ namespace Lette.Functional.CSharp.Tests
         {
             public static readonly Func<int, int> AddOne = x => x + 1;
             public static readonly Func<Maybe<int>, Maybe<int>> ElevatedAddOne = Maybe.FMap(AddOne);
-            public static readonly Func<Maybe<string>, Maybe<int>> ElevatedConst42 = Maybe.FMap(42.ToConst().WithInput<string>());
 
             [Fact]
             public void Elevated_function_maps_nothing_to_nothing()
