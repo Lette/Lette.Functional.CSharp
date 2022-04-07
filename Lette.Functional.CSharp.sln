@@ -7,7 +7,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Lette.Functional.CSharp", "
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Lette.Functional.CSharp.Tests", "Lette.Functional.CSharp.Tests\Lette.Functional.CSharp.Tests.csproj", "{3F7A2FF1-FA08-4B6D-A9B6-934A9402557A}"
 EndProject
-Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Lette.Functional.FSharp", "Lette.Functional.FSharp\Lette.Functional.FSharp.fsproj", "{2EEB0F58-B22E-4E3B-B12D-7570C86831F7}"
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Lette.Functional.FSharp", "Lette.Functional.FSharp\Lette.Functional.FSharp.fsproj", "{E21B6F29-F1F3-4F15-ACE8-9AA083D51A42}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -23,10 +23,10 @@ Global
 		{3F7A2FF1-FA08-4B6D-A9B6-934A9402557A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3F7A2FF1-FA08-4B6D-A9B6-934A9402557A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3F7A2FF1-FA08-4B6D-A9B6-934A9402557A}.Release|Any CPU.Build.0 = Release|Any CPU
-		{2EEB0F58-B22E-4E3B-B12D-7570C86831F7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{2EEB0F58-B22E-4E3B-B12D-7570C86831F7}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{2EEB0F58-B22E-4E3B-B12D-7570C86831F7}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{2EEB0F58-B22E-4E3B-B12D-7570C86831F7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E21B6F29-F1F3-4F15-ACE8-9AA083D51A42}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E21B6F29-F1F3-4F15-ACE8-9AA083D51A42}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E21B6F29-F1F3-4F15-ACE8-9AA083D51A42}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E21B6F29-F1F3-4F15-ACE8-9AA083D51A42}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

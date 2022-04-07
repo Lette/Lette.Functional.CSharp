@@ -1,8 +1,7 @@
 module Tests
 
-open System
 open Xunit
 
-//[<Fact>]
-//let ``My test`` () =
-//    Assert.True(true)
+[<Fact>]
+let ``Smoke test`` () =
+    Assert.True(true)

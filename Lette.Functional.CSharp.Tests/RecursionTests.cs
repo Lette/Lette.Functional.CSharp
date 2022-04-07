@@ -63,18 +63,18 @@ namespace Lette.Functional.CSharp.Tests
             Assert.Null(ex);
         }
 
-        [Fact(Skip = "Use for finding machine specific limit of recursion.")]
-        public void Recursion_depth_test()
-        {
-            BigInteger F(int k, BigInteger acc)
-            {
-                if (k == 1)
-                    return acc;
-
-                return F(k - 1, k * acc);
-            }
-
-            F(18000, 1);
-        }
+        // [Fact(Skip = "Use for finding machine specific limit of recursion.")]
+        // public void Recursion_depth_test()
+        // {
+        //     BigInteger F(int k, BigInteger acc)
+        //     {
+        //         if (k == 1)
+        //             return acc;
+        //
+        //         return F(k - 1, k * acc);
+        //     }
+        //
+        //     F(18000, 1);
+        // }
     }
 }
