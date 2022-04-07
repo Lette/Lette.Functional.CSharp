@@ -65,6 +65,7 @@
     <Compile Include="Railway\Request.cs" />
     <Compile Include="Recursion.cs" />
     <Compile Include="Result.cs" />
+    <Compile Include="State.cs" />
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

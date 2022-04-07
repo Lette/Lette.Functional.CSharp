@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Runtime.InteropServices.ComTypes;
 
 namespace Lette.Functional.CSharp
 {
@@ -79,6 +78,14 @@ namespace Lette.Functional.CSharp
             => func(input);
         public static Func<Func<TIn, TOut>, TOut> ForwardPipe<TIn, TOut>(TIn input)
             => func => func(input);
+
+        // forwardPipe1 :: (a * b) -> (a -> b -> c) -> c
+        // F#: let forwardPipe2 x f = x ||> f
+        // F#: let (||>) (x, y) f = f x y
+        public static TOut ForwardPipe<TIn1, TIn2, TOut>(this (TIn1, TIn2) input, Func<TIn1, TIn2, TOut> func)
+            => func(input.Item1, input.Item2);
+        //public static Func<Func<TIn, TOut>, TOut> ForwardPipe<TIn, TOut>(TIn input)
+        //    => func => func(input);
 
         // Currying for 2, 3 and 4 parameter functions
         public static Func<T1, Func<T2, T3>> Curry<T1, T2, T3>(this Func<T1, T2, T3> f)
